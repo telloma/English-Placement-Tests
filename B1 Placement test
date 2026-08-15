@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spanish Exam - Level B1</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --border: #e2e8f0;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --incorrect-bg: #fee2e2;
+      --incorrect-border: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .quiz-container {
+      max-width: 650px;
+      width: 100%;
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      position: relative;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .lang-btn {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+
+    .lang-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .progress-text {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    header {
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: #0f172a;
+      margin-bottom: 0.4rem;
+    }
+
+    p.subtitle {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .question-card {
+      padding: 1rem 0;
+    }
+
+    .question-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 1.25rem;
+      line-height: 1.4;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .option {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+
+    .option:hover {
+      background-color: #f1f5f9;
+    }
+
+    .option input {
+      margin-right: 0.75rem;
+      accent-color: var(--primary);
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn:disabled {
+      background-color: #cbd5e1;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background-color: #e2e8f0;
+      color: #334155;
+    }
+
+    .btn-secondary:hover {
+      background-color: #cbd5e1;
+    }
+
+    #result-box {
+      display: none;
+      text-align: center;
+      padding: 1.5rem 1rem;
+    }
+
+    #result-box h2 {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    .badge-pass {
+      background-color: var(--correct-bg);
+      color: var(--correct-border);
+    }
+
+    .badge-fail {
+      background-color: var(--incorrect-bg);
+      color: var(--incorrect-border);
+    }
+
+    .result-details {
+      font-size: 1.05rem;
+      color: #334155;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-restart {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-container">
+  <div class="top-bar">
+    <span class="progress-text" id="progress-indicator"></span>
+    <button class="lang-btn" id="lang-toggle" onclick="toggleLanguage()">Português 🇧🇷</button>
+  </div>
+
+  <div id="quiz-view">
+    <header>
+      <h1 id="ui-title">Spanish Exam - Level B1</h1>
+      <p class="subtitle" id="ui-subtitle">Select the correct option to complete each sentence.</p>
+    </header>
+
+    <div id="question-wrapper"></div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" id="btn-prev" onclick="prevQuestion()" disabled>Previous</button>
+      <button class="btn" id="btn-next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <div id="result-box">
+    <h2 id="result-title">Exam Results</h2>
+    <div id="result-badge" class="badge"></div>
+    <p class="result-details" id="result-text"></p>
+    <button class="btn btn-restart" id="btn-restart" onclick="initQuiz()">Try Again</button>
+  </div>
+</div>
+
+<script>
+  const fullPool = [
+    { question: "Cuando llegamos a la estación, el tren ya ________.", options: ["salía", "había salido", "salió", "ha salido"], answer: 1 },
+    { question: "Si yo ________ más dinero, viajaría por todo el mundo.", options: ["tengo", "tendría", "tuviera", "he tenido"], answer: 2 },
+    { question: "Me molesta que la gente ________ tanto ruido en la biblioteca.", options: ["hace", "haga", "hacía", "hará"], answer: 1 },
+    { question: "¿Qué ________ tú si ganaras la lotería?", options: ["harías", "haces", "hiciste", "hayas hecho"], answer: 0 },
+    { question: "Cuando era joven, siempre ________ al fútbol con mis amigos los domingos.", options: ["jugué", "jugaba", "he jugado", "había jugado"], answer: 1 },
+    { question: "Espero que la profesora ________ pronto la fecha del examen.", options: ["confirma", "confirme", "confirmó", "confirmaba"], answer: 1 },
+    { question: "Ayer, mientras mi madre cocinaba, yo ________ la mesa.", options: ["puse", "ponía", "he puesto", "había puesto"], answer: 1 },
+    { question: "Te aconsejo que ________ un médico antes de tomar ese medicamento.", options: ["ves", "veas", "viste", "verás"], answer: 1 },
+    { question: "No creo que Juan ________ a la fiesta; está enfermo.", options: ["viene", "venga", "vendrá", "vino"], answer: 1 },
+    { question: "Antes de mudarme a esta ciudad, yo nunca ________ la nieve.", options: ["he visto", " visto", "había visto", "veía"], answer: 2 },
+    { question: "¡Ojalá mañana ________ soleado!", options: ["hace", "haga", "sea", "esté"], answer: 2 },
+    { question: "¿Qué estabas haciendo ayer a las ocho de la noche? — ________ un libro.", options: ["Leí", "Leyendo", "He leído", "Estaba leyendo"], answer: 3 },
+    { question: "Si hubieras estudiado más, ________ el examen sin problemas.", options: ["habrías aprobado", "apruebas", "aprobarás", "has aprobado"], answer: 0 },
+    { question: "Te llamo para ________ que no podré ir a la reunión de hoy.", options: ["avisarte", "avisarte que", "me avises", "avisas"], answer: 0 },
+    { question: "Llevo tres meses ________ en este proyecto de investigación.", options: ["trabajando", "trabajar", "trabajado", "trabajo"], answer: 0 },
+    { question: "Mis padres quieren que yo ________ una carrera universitaria.", options: ["estudio", "estudiaba", "estudiaré", "estudie"], answer: 3 },
+    { question: "Es una pena que no ________ venir a mi fiesta el sábado.", options: ["puedes", "podrás", "podías", "puedas"], answer: 3 },
+    { question: "Andrés me dijo que ________ a la fiesta si terminaba el informe a tiempo.", options: ["vendría", "viene", "venga", "haya venido"], answer: 0 },
+    { question: "¿ ________ a la cena? No sé, creo que no.", options: ["Querá venir", "Quierá venir", "Querrá venir", "Querrá venir"], answer: 3 },
+    { question: "No estoy seguro de que este restaurante ________ el mejor de la ciudad.", options: ["es", "estuvo", "era", "sea"], answer: 3 },
+    { question: "Apenas llegué a casa, me di cuenta de que ________ las llaves en la oficina.", options: ["olvidé", "había olvidado", "he olvidado", "olvidaba"], answer: 1 },
+    { question: "¿Puedes hablar más despacio? No ________ nada de lo que dices.", options: ["entiendo", "entienda", "entendía", "he entendido"], answer: 0 },
+    { question: "Mi médico me recomendó que ________ hacer ejercicio con regularidad.", options: ["empiezo", "empezó", "empezaré", "empezara"], answer: 3 },
+    { question: "¿________ darnos una mesa cerca de la ventana, por favor?", options: ["Podría", "Puede", "Podías", "Pudo"], answer: 0 },
+    { question: "Tan pronto como ________ a la estación, llámame por teléfono.", options: ["llegas", "llegues", "llegaste", "llegarás"], answer: 1 },
+    { question: "No me gusta nada que me ________ cuando estoy hablando.", options: ["interrumpen", "interrumpieron", "interrumpían", "interrumpan"], answer: 3 },
+    { question: "Nos da mucho gusto que te ________ el regalo de graduación.", options: ["gusta", "haya gustó", "gustó", "haya gustado"], answer: 3 },
+    { question: "Volví a ________ con mi profesor de la escuela primaria la semana pasada.", options: ["encontrar", "encontrándome", "me encontré", "encontrarme"], answer: 3 },
+    { question: "Deberías tomar una aspirina para ________ el dolor de cabeza.", options: ["calmar", "calmando", "calmes", "calmarte"], answer: 0 },
+    { question: "Aunque ________ lloviendo, salimos a caminar por el parque.", options: ["esté", "estuviese", "está", "estaba"], answer: 3 },
+    { question: "Es necesario que los estudiantes ________ la tarea antes de la clase.", options: ["se entreguen", "entregan", "entregaron", "entreguen"], answer: 3 },
+    { question: "Ayer no  ________ el control remoto.", options: ["encuentré", "encuentraba", "encontré", "encontre"], answer: 2 },
+    { question: "Le rogaron al director que ________ una segunda oportunidad al equipo.", options: ["da", "dará", "diera", "ha dado"], answer: 2 },
+    { question: "Creo que María ________ la mejor candidata para el puesto.", options: ["estaría", "estuviera", "sería", "fuería"], answer: 2 },
+    { question: "¡Que ________ un excelente fin de semana!", options: ["tienes", "tendrás", "tengas", "tuviste"], answer: 2 },
+    { question: "Esta computadora funciona bastante bien, ________ es un poco lenta.", options: ["aunque", "para que", "sin embargo", "porque"], answer: 2 },
+    { question: "Me alegro de que tus problemas personales se ________ resuelto.", options: ["hayan", "han", "habían", "habrán"], answer: 0 },
+    { question: "Si me ________ dicho la verdad desde el principio, no estaríamos en esta situación.", options: ["habías", "hubieras", "has", "habrás"], answer: 1 },
+    { question: "Dudo mucho que el tren ________ a tiempo con esta nevada.", options: ["llega", "llegue", "llegará", "llegó"], answer: 1 },
+    { question: "Estaba caminando por la calle cuando de repente ________ a llover fuertemente.", options: ["empezó", "empezaba", "ha empezado", "había empezado"], answer: 0 },
+    { question: "¿Te importa que ________ la ventana? Hace un poco de calor aquí.", options: ["abro", "abra", "abrí", "abriría"], answer: 1 },
+    { question: "Si no ________ tráfico, llegaremos a la reunión en diez minutos.", options: ["hay", "haya", "hubiera", "habría"], answer: 0 },
+    { question: "Siempre me ha interesado aprender idiomas, ________ estudio español todos los días.", options: ["por eso", "aunque", "porque", "sin embargo"], answer: 0 },
+    { question: "Cuando ________ a España el año próximo, visitaré la Alhambra de Granada.", options: ["voy", "vaya", "iré", "fui"], answer: 1 },
+    { question: "Le aconsejé a mi amigo que no ________ esa casa viejísima.", options: ["compra", "comprara", "comprará", "ha comprado"], answer: 1 },
+    { question: "¿Qué me recomiendas que ________ para la cena de esta noche?", options: ["preparo", "prepare", "preparé", "prepararé"], answer: 1 },
+    { question: "En cuanto ________ el teléfono, salí inmediatamente hacia el hospital.", options: ["sonó", "sonaba", "suena", "haya sonado"], answer: 0 },
+    { question: "Busco un departamento que ________ tres dormitorios y balcón con vista al mar.", options: ["tiene", "tenga", "tenía", "tendrá"], answer: 1 },
+    { question: "Me dijo que no se sentía bien porque ________ algo en mal estado.", options: ["comió", "había comido", "ha comido", "come"], answer: 1 },
+    { question: "Le pidió a la camarera que le ________ una servilleta limpia.", options: ["trae", "trajera", "traerá", "ha traído"], answer: 1 },
+    { question: "¿Crees que este problema ________ solución en un futuro cercano?", options: ["tiene", "tenga", "tuviera", "tendría"], answer: 0 },
+    { question: "Para solicitar la beca, es indispensable que ________ todos los formularios.", options: ["llenas", "llenes", "llenaste", "llenarás"], answer: 1 },
+    { question: "Estudié mucho durante todo el semestre, ________ aprobé todos los exámenes.", options: ["por lo tanto", "aunque", "sin embargo", "ya que"], answer: 0 },
+    { question: "Si el clima ________ bueno mañana, iremos de picnic al lago.", options: ["es", "sea", "fuera", "sería"], answer: 0 },
+    { question: "Me molesta enormemente que las personas ________ tarde a las citas.", options: ["llegan", "lleguen", "llegaban", "llegarán"], answer: 1 },
+    { question: "Le sugerí a Carla que ________ con su jefe antes de tomar una decisión.", options: ["habla", "hablara", "hablará", "ha hablado"], answer: 1 },
+    { question: "No creo que el profesor ________ hoy a la universidad; está enfermo.", options: ["viene", "venga", "vendrá", "vino"], answer: 1 },
+    { question: "Antes de salir de viaje, debemos verificar que el auto ________ en buen estado.", options: ["está", "esté", "estuvo", "estararía"], answer: 1 },
+    { question: "Nos quedaremos en el parque hasta que ________ de noche.", options: ["se hace", "se haga", "se hizo", "se hará"], answer: 1 },
+    { question: "Siento mucho que tú no ________ asistir a la ceremonia de graduación.", options: ["puedes", "puedas", "podías", "podrás"], answer: 1 }
+  ];
+
+  const translations = {
+    en: {
+      title: "Spanish Exam - Level B1",
+      subtitle: "Select the correct option to complete each sentence.",
+      langBtn: "Português 🇧🇷",
+      questionTag: "Question",
+      of: "of",
+      prevBtn: "Previous",
+      nextBtn: "Next",
+      submitBtn: "Finish Exam",
+      resultTitle: "B1 Level Exam Results",
+      passedBadge: "PASSED!",
+      failedBadge: "NOT PASSED",
+      scoreText: (score, total, pct) => `You scored <strong>${score}</strong> out of <strong>${total}</strong> (${pct}%).`,
+      passMessage: "Congratulations! You demonstrate intermediate fluency and mastery of B1 level structures.",
+      failMessage: "We recommend reviewing Level B1 grammar topics before advancing.",
+      restartBtn: "Try Again"
+    },
+    pt: {
+      title: "Exame de Espanhol - Nível B1",
+      subtitle: "Selecione a opção correta para completar cada frase.",
+      langBtn: "English 🇬🇧",
+      questionTag: "Pergunta",
+      of: "de",
+      prevBtn: "Anterior",
+      nextBtn: "Próxima",
+      submitBtn: "Finalizar Exame",
+      resultTitle: "Resultado do Exame B1",
+      passedBadge: "APROVADO!",
+      failedBadge: "NÃO APROVADO",
+      scoreText: (score, total, pct) => `Você acertou <strong>${score}</strong> de <strong>${total}</strong> questões (${pct}%).`,
+      passMessage: "Parabéns! Você demonstra fluência intermediária e domínio das estruturas do Nível B1.",
+      failMessage: "Recomendamos revisar os tópicos gramaticais do Nível B1 antes de avançar.",
+      restartBtn: "Tentar novamente"
+    }
+  };
+
+  let currentLang = 'en';
+  let activeQuestions = [];
+  let userAnswers = [];
+  let currentIndex = 0;
+
+  function initQuiz() {
+    activeQuestions = [...fullPool].sort(() => 0.5 - Math.random()).slice(0, 20);
+    userAnswers = new Array(20).fill(null);
+    currentIndex = 0;
+    
+    document.getElementById("quiz-view").style.display = "block";
+    document.getElementById("result-box").style.display = "none";
+    
+    updateUI();
+    renderQuestion();
+  }
+
+  function toggleLanguage() {
+    currentLang = currentLang === 'en' ? 'pt' : 'en';
+    updateUI();
+  }
+
+  function updateUI() {
+    const t = translations[currentLang];
+    document.getElementById("ui-title").textContent = t.title;
+    document.getElementById("ui-subtitle").textContent = t.subtitle;
+    document.getElementById("lang-toggle").textContent = t.langBtn;
+    document.getElementById("btn-prev").textContent = t.prevBtn;
+    document.getElementById("btn-restart").textContent = t.restartBtn;
+    document.getElementById("result-title").textContent = t.resultTitle;
+    
+    updateProgressAndNav();
+  }
+
+  function updateProgressAndNav() {
+    const t = translations[currentLang];
+    document.getElementById("progress-indicator").textContent = `${t.questionTag} ${currentIndex + 1} ${t.of} 20`;
+    
+    document.getElementById("btn-prev").disabled = currentIndex === 0;
+    
+    const nextBtn = document.getElementById("btn-next");
+    if (currentIndex === 19) {
+      nextBtn.textContent = t.submitBtn;
+    } else {
+      nextBtn.textContent = t.nextBtn;
+    }
+  }
+
+  function renderQuestion() {
+    const q = activeQuestions[currentIndex];
+    const wrapper = document.getElementById("question-wrapper");
+    
+    wrapper.innerHTML = `
+      <div class="question-card">
+        <p class="question-title">${q.question.replace('\n', '<br>')}</p>
+        <div class="options">
+          ${q.options.map((opt, optIdx) => `
+            <label class="option">
+              <input type="radio" name="currentQ" value="${optIdx}" 
+                ${userAnswers[currentIndex] === optIdx ? 'checked' : ''} 
+                onchange="selectOption(${optIdx})">
+              ${String.fromCharCode(97 + optIdx)}) ${opt}
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    
+    updateProgressAndNav();
+  }
+
+  function selectOption(optionIdx) {
+    userAnswers[currentIndex] = optionIdx;
+  }
+
+  function nextQuestion() {
+    if (currentIndex < 19) {
+      currentIndex++;
+      renderQuestion();
+    } else {
+      gradeQuiz();
+    }
+  }
+
+  function prevQuestion() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderQuestion();
+    }
+  }
+
+  function gradeQuiz() {
+    let score = 0;
+    activeQuestions.forEach((q, idx) => {
+      if (userAnswers[idx] === q.answer) {
+        score++;
+      }
+    });
+
+    const percentage = Math.round((score / 20) * 100);
+    const passed = percentage >= 70;
+    const t = translations[currentLang];
+
+    document.getElementById("quiz-view").style.display = "none";
+    document.getElementById("progress-indicator").textContent = "";
+    
+    const resultBox = document.getElementById("result-box");
+    const badge = document.getElementById("result-badge");
+    const resultText = document.getElementById("result-text");
+
+    badge.className = `badge ${passed ? 'badge-pass' : 'badge-fail'}`;
+    badge.textContent = passed ? t.passedBadge : t.failedBadge;
+
+    resultText.innerHTML = `
+      ${t.scoreText(score, 20, percentage)}<br><br>
+      ${passed ? t.passMessage : t.failMessage}
+    `;
+
+    resultBox.style.display = "block";
+  }
+
+  initQuiz();
+</script>
+
+</body>
+</html>

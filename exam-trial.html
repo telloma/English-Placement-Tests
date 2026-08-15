@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spanish Exam A1 — Interactive Placement Test</title>
+<meta name="description" content="Take a 15-question Spanish A1 placement exam in English or Portuguese and get an instant pass/fail score." />
+<meta property="og:title" content="Spanish Exam A1 — Interactive Placement Test" />
+<meta property="og:description" content="15 randomized grammar and vocabulary questions with instant scoring, in English or Portuguese." />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --background: oklch(0.98 0.008 264);
+    --foreground: oklch(0.21 0.035 265);
+    --card: oklch(1 0 0);
+    --muted-foreground: oklch(0.554 0.046 257.417);
+    --primary: oklch(0.55 0.2 266);
+    --primary-foreground: oklch(0.99 0.005 250);
+    --secondary: oklch(0.955 0.012 250);
+    --secondary-foreground: oklch(0.3 0.04 265);
+    --accent: oklch(0.9 0.08 200);
+    --success: oklch(0.6 0.15 152);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.915 0.014 255);
+    --radius: 1.5rem;
+    --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+    --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--background);
+    color: var(--foreground);
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 3rem 1rem; position: relative; overflow-x: hidden;
+  }
+  .blob { position: fixed; width: 24rem; height: 24rem; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
+  .blob-1 { top: -10rem; left: -8rem; background: color-mix(in oklch, var(--primary) 25%, transparent); }
+  .blob-2 { bottom: -10rem; right: -8rem; background: color-mix(in oklch, var(--accent) 30%, transparent); }
+  .card {
+    position: relative; z-index: 1; width: 100%; max-width: 42rem;
+    background: color-mix(in oklch, var(--card) 80%, transparent);
+    backdrop-filter: blur(16px);
+    border: 1px solid color-mix(in oklch, var(--border) 70%, transparent);
+    border-radius: var(--radius);
+    padding: 2.5rem; box-shadow: 0 24px 60px -24px rgba(60, 60, 140, 0.35);
+  }
+  @media (max-width: 640px) { .card { padding: 1.5rem; } }
+  .top-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .level-chip {
+    display: inline-flex; align-items: center; gap: .5rem; border-radius: 999px;
+    background: var(--secondary); color: var(--secondary-foreground);
+    padding: .375rem .75rem; font-size: .75rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+  }
+  .lang-btn {
+    border-radius: 999px; border: 1px solid var(--border); background: color-mix(in oklch, var(--card) 60%, transparent);
+    padding: .375rem 1rem; font-size: .875rem; font-weight: 600; color: var(--foreground);
+    cursor: pointer; font-family: inherit; transition: background-color .2s;
+  }
+  .lang-btn:hover { background: var(--secondary); }
+  h1 { font-family: var(--font-display); font-size: 2.25rem; font-weight: 600; letter-spacing: -.02em; margin-top: 1.5rem; }
+  @media (max-width: 640px) { h1 { font-size: 1.75rem; } }
+  .subtitle { margin-top: .5rem; font-size: .875rem; color: var(--muted-foreground); }
+  .progress-row { display: flex; justify-content: space-between; font-size: .75rem; font-weight: 600; color: var(--muted-foreground); margin-top: 2rem; }
+  .track { margin-top: .5rem; height: .5rem; width: 100%; border-radius: 999px; background: var(--secondary); overflow: hidden; }
+  .bar { height: 100%; border-radius: 999px; background: var(--primary); transition: width .5s ease-out; }
+  .question { margin-top: 2rem; font-size: 1.25rem; line-height: 1.6; font-weight: 500; white-space: pre-line; }
+  .options { margin-top: 1.5rem; display: flex; flex-direction: column; gap: .75rem; }
+  .option {
+    display: flex; align-items: center; gap: 1rem; text-align: left; cursor: pointer;
+    border-radius: 1rem; border: 1px solid var(--border); background: color-mix(in oklch, var(--card) 60%, transparent);
+    padding: .875rem 1rem; font-family: inherit; font-size: 1rem; color: var(--foreground); transition: all .2s;
+  }
+  .option:hover { border-color: color-mix(in oklch, var(--primary) 50%, transparent); background: var(--secondary); }
+  .option.selected { border-color: var(--primary); background: color-mix(in oklch, var(--primary) 10%, transparent); box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary) 15%, transparent); }
+  .letter {
+    flex: none; width: 2rem; height: 2rem; border-radius: 999px; display: flex; align-items: center; justify-content: center;
+    font-size: .875rem; font-weight: 700; background: var(--secondary); color: var(--muted-foreground); transition: all .2s;
+  }
+  .option.selected .letter { background: var(--primary); color: var(--primary-foreground); }
+  .nav { margin-top: 2.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .btn-ghost {
+    border-radius: 999px; border: 1px solid var(--border); background: color-mix(in oklch, var(--card) 60%, transparent);
+    padding: .75rem 1.5rem; font-size: .875rem; font-weight: 600; color: var(--foreground); cursor: pointer; font-family: inherit; transition: background-color .2s;
+  }
+  .btn-ghost:hover:not(:disabled) { background: var(--secondary); }
+  .btn-ghost:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-primary {
+    border: none; border-radius: 999px; background: var(--primary); color: var(--primary-foreground);
+    padding: .75rem 1.75rem; font-size: .875rem; font-weight: 600; cursor: pointer; font-family: inherit;
+    box-shadow: 0 10px 25px -8px color-mix(in oklch, var(--primary) 60%, transparent); transition: all .2s;
+  }
+  .btn-primary:hover { filter: brightness(1.08); }
+  #result { display: none; text-align: center; padding: 1.5rem 0; }
+  #result h2 { font-family: var(--font-display); font-size: 1.875rem; font-weight: 600; letter-spacing: -.02em; }
+  .ring-wrap { position: relative; margin: 2rem auto 0; width: 10rem; height: 10rem; display: flex; align-items: center; justify-content: center; }
+  .ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: var(--secondary); stroke-width: 10; }
+  .ring-fg { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset .9s ease-out; }
+  .ring-pct { position: absolute; font-family: var(--font-display); font-size: 2.25rem; font-weight: 700; }
+  .badge { display: inline-block; margin-top: 1.5rem; border-radius: 999px; padding: .5rem 1.25rem; font-size: .875rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+  .badge-pass { background: color-mix(in oklch, var(--success) 15%, transparent); color: var(--success); }
+  .badge-fail { background: color-mix(in oklch, var(--destructive) 15%, transparent); color: var(--destructive); }
+  .score-line { margin-top: 1.25rem; font-size: 1rem; font-weight: 500; }
+  .score-msg { margin: .5rem auto 0; max-width: 28rem; font-size: .875rem; color: var(--muted-foreground); }
+  #result .btn-primary { margin-top: 2rem; }
+</style>
+</head>
+<body>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<section class="card">
+  <div class="top-bar">
+    <span class="level-chip" id="level-chip">Level A1</span>
+    <button class="lang-btn" id="lang-toggle" onclick="toggleLanguage()">Português 🇧🇷</button>
+  </div>
+
+  <div id="quiz-view">
+    <h1 id="ui-title">Spanish Exam</h1>
+    <p class="subtitle" id="ui-subtitle">Select the correct option to complete each sentence.</p>
+
+    <div class="progress-row">
+      <span id="progress-indicator"></span>
+      <span id="answered-indicator"></span>
+    </div>
+    <div class="track"><div class="bar" id="progress-bar" style="width:0%"></div></div>
+
+    <p class="question" id="question-text"></p>
+    <div class="options" id="options"></div>
+
+    <div class="nav">
+      <button class="btn-ghost" id="btn-prev" onclick="prevQuestion()" disabled>Previous</button>
+      <button class="btn-primary" id="btn-next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <div id="result">
+    <h2 id="result-title">A1 Level Exam Results</h2>
+    <div class="ring-wrap">
+      <svg viewBox="0 0 120 120">
+        <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
+        <circle class="ring-fg" id="ring" cx="60" cy="60" r="52"></circle>
+      </svg>
+      <span class="ring-pct" id="ring-pct">0%</span>
+    </div>
+    <div class="badge" id="result-badge"></div>
+    <p class="score-line" id="score-line"></p>
+    <p class="score-msg" id="score-msg"></p>
+    <button class="btn-primary" id="btn-restart" onclick="initQuiz()">Try Again</button>
+  </div>
+</section>
+
+<script>
+const fullPool = [
+  { question: "— Hola, ¿cómo ________ usted?\n— Muy bien, gracias.", options: ["estás", "está", "estoy", "están"], answer: 1 },
+  { question: "A mí me ________ la comida italiana.", options: ["gusta", "gustan", "gusto", "gustar"], answer: 0 },
+  { question: "Disculpe, ¿________ tarjeta de crédito aquí?", options: ["Paga", "Lleva", "Aceptan", "Cuesta"], answer: 2 },
+  { question: "Nosotros ________ español todos los días en la escuela.", options: ["estudio", "estudias", "estudia", "estudiamos"], answer: 3 },
+  { question: "Hoy Juan no vino a clase porque ________ enfermo.", options: ["es", "está", "son", "están"], answer: 1 },
+  { question: "María y Elena son profesoras; ________ trabajo es muy interesante.", options: ["mi", "tu", "su", "nuestro"], answer: 2 },
+  { question: "No me gusta ________ el pescado, prefiero comer pollo.", options: ["mucho", "nada", "bastante", "más"], answer: 1 },
+  { question: "________ casa de mis abuelos es grande y bonita.", options: ["El", "Un", "La", "Los"], answer: 2 },
+  { question: "Yo ________ a las 7:00 AM todas las mañanas.", options: ["levanto", "se levanta", "te levantas", "me levanto"], answer: 3 },
+  { question: "El próximo sábado nosotros ________ a visitar a nuestros tíos.", options: ["van", "vamos", "vas", "voy"], answer: 1 },
+  { question: "— ¿Qué hora es?\n— ________ las tres y media de la tarde.", options: ["Es", "Son", "Hay", "Está"], answer: 1 },
+  { question: "La farmacia está ________ del supermercado.", options: ["en", "a", "al lado", "por"], answer: 2 },
+  { question: "Mis tíos prefieren viajar ________ tren cuando van a la capital.", options: ["en", "a", "por", "con"], answer: 0 },
+  { question: "El clima en mi ciudad ________ generalmente.", options: ["es caluroso", "está caluroso", "es calor", "está calor"], answer: 0 },
+  { question: "En la cocina ________ una mesa grande y cuatro sillas.", options: ["es", "está", "hay", "tiene"], answer: 2 },
+  { question: "Mi departamento ________ tres dormitorios y dos baños.", options: ["hay", "tiene", "está", "es"], answer: 1 },
+  { question: "En este momento, Lucía está ________ una carta para su amiga.", options: ["escribe", "escribiendo", "escribir", "escrito"], answer: 1 },
+  { question: "Carlos siempre ________ ducha antes de salir a trabajar.", options: ["se", "me", "te", "nos"], answer: 0 },
+  { question: "¡Por favor, ________ la puerta al salir!", options: ["cierra", "cerras", "cerrando", "cerrar"], answer: 0 },
+  { question: "Mi amiga es ________ de estudio.", options: ["más alta yo", "más alta que yo", "más alta mi", "más alta me"], answer: 1 },
+  { question: "Mi hermano es más alto ________ yo.", options: ["como", "que", "tan", "más"], answer: 1 },
+  { question: "Marta es muy alegre, pero su hermano es bastante ________.", options: ["simpático", "tímido", "alto", "joven"], answer: 1 },
+  { question: "¿________ hablas inglés o español con tu familia?", options: ["Usted", "Tú", "Él", "Ellos"], answer: 1 },
+  { question: "Mis primos ________ de Argentina, pero ahora viven en Brasil.", options: ["están", "son", "hay", "tienen"], answer: 1 },
+  { question: "Mis amigos ________ al fútbol los fines de semana.", options: ["juegan", "jugamos", "juega", "juego"], answer: 0 }
+];
+
+const translations = {
+  en: {
+    title: "Spanish Exam", level: "Level A1",
+    subtitle: "Select the correct option to complete each sentence.",
+    langBtn: "Português 🇧🇷", questionTag: "Question", of: "of", answered: "answered",
+    prevBtn: "Previous", nextBtn: "Next", submitBtn: "Finish Exam",
+    resultTitle: "A1 Level Exam Results", passedBadge: "PASSED!", failedBadge: "NOT PASSED",
+    scoreText: (s, t, p) => `You scored <strong>${s}</strong> out of <strong>${t}</strong> (${p}%).`,
+    passMessage: "You demonstrate the required mastery of Level A1 vocabulary and grammar.",
+    failMessage: "We recommend reviewing Level A1 content before moving forward.",
+    restartBtn: "Try Again"
+  },
+  pt: {
+    title: "Exame de Espanhol", level: "Nível A1",
+    subtitle: "Selecione a opção correta para completar cada frase.",
+    langBtn: "English 🇬🇧", questionTag: "Pergunta", of: "de", answered: "respondidas",
+    prevBtn: "Anterior", nextBtn: "Próxima", submitBtn: "Finalizar Exame",
+    resultTitle: "Resultado do Exame A1", passedBadge: "APROVADO!", failedBadge: "NÃO APROVADO",
+    scoreText: (s, t, p) => `Você acertou <strong>${s}</strong> de <strong>${t}</strong> questões (${p}%).`,
+    passMessage: "Você demonstra o domínio necessário do vocabulário e gramática do Nível A1.",
+    failMessage: "Recomendamos revisar os conteúdos do Nível A1 antes de avançar.",
+    restartBtn: "Tentar novamente"
+  }
+};
+
+const TOTAL = 15;
+let currentLang = 'en', activeQuestions = [], userAnswers = [], currentIndex = 0, finished = false;
+
+function initQuiz() {
+  activeQuestions = [...fullPool].sort(() => 0.5 - Math.random()).slice(0, TOTAL);
+  userAnswers = new Array(TOTAL).fill(null);
+  currentIndex = 0; finished = false;
+  document.getElementById("quiz-view").style.display = "block";
+  document.getElementById("result").style.display = "none";
+  render();
+}
+
+function toggleLanguage() {
+  currentLang = currentLang === 'en' ? 'pt' : 'en';
+  finished ? gradeQuiz() : render();
+  const t = translations[currentLang];
+  document.getElementById("lang-toggle").textContent = t.langBtn;
+  document.getElementById("level-chip").textContent = t.level;
+}
+
+function render() {
+  const t = translations[currentLang];
+  const q = activeQuestions[currentIndex];
+  document.getElementById("ui-title").textContent = t.title;
+  document.getElementById("ui-subtitle").textContent = t.subtitle;
+  document.getElementById("level-chip").textContent = t.level;
+  document.getElementById("lang-toggle").textContent = t.langBtn;
+  document.getElementById("progress-indicator").textContent = `${t.questionTag} ${currentIndex + 1} ${t.of} ${TOTAL}`;
+  const answered = userAnswers.filter(a => a !== null).length;
+  document.getElementById("answered-indicator").textContent = `${answered}/${TOTAL} ${t.answered}`;
+  document.getElementById("progress-bar").style.width = `${((currentIndex + 1) / TOTAL) * 100}%`;
+  document.getElementById("question-text").textContent = q.question;
+
+  document.getElementById("options").innerHTML = q.options.map((opt, i) => `
+    <button class="option ${userAnswers[currentIndex] === i ? 'selected' : ''}" onclick="selectOption(${i})">
+      <span class="letter">${String.fromCharCode(65 + i)}</span>
+      <span>${opt}</span>
+    </button>`).join('');
+
+  document.getElementById("btn-prev").textContent = t.prevBtn;
+  document.getElementById("btn-prev").disabled = currentIndex === 0;
+  document.getElementById("btn-next").textContent = currentIndex === TOTAL - 1 ? t.submitBtn : t.nextBtn;
+}
+
+function selectOption(i) { userAnswers[currentIndex] = i; render(); }
+function nextQuestion() { currentIndex < TOTAL - 1 ? (currentIndex++, render()) : gradeQuiz(); }
+function prevQuestion() { if (currentIndex > 0) { currentIndex--; render(); } }
+
+function gradeQuiz() {
+  finished = true;
+  const t = translations[currentLang];
+  let score = 0;
+  activeQuestions.forEach((q, i) => { if (userAnswers[i] === q.answer) score++; });
+  const pct = Math.round((score / TOTAL) * 100);
+  const passed = pct >= 70;
+
+  document.getElementById("quiz-view").style.display = "none";
+  document.getElementById("result").style.display = "block";
+  document.getElementById("result-title").textContent = t.resultTitle;
+
+  const C = 2 * Math.PI * 52;
+  const ring = document.getElementById("ring");
+  ring.style.stroke = passed ? "var(--success)" : "var(--destructive)";
+  ring.style.strokeDasharray = C;
+  ring.style.strokeDashoffset = C;
+  requestAnimationFrame(() => { ring.style.strokeDashoffset = C * (1 - pct / 100); });
+  document.getElementById("ring-pct").textContent = pct + "%";
+
+  const badge = document.getElementById("result-badge");
+  badge.className = "badge " + (passed ? "badge-pass" : "badge-fail");
+  badge.textContent = passed ? t.passedBadge : t.failedBadge;
+
+  document.getElementById("score-line").innerHTML = t.scoreText(score, TOTAL, pct);
+  document.getElementById("score-msg").textContent = passed ? t.passMessage : t.failMessage;
+  document.getElementById("btn-restart").textContent = t.restartBtn;
+}
+
+initQuiz();
+</script>
+</body>
+</html>

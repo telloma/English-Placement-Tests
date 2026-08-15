@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spanish Exam - Level A1</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --border: #e2e8f0;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --incorrect-bg: #fee2e2;
+      --incorrect-border: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .quiz-container {
+      max-width: 650px;
+      width: 100%;
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      position: relative;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .lang-btn {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+
+    .lang-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .progress-text {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    header {
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: #0f172a;
+      margin-bottom: 0.4rem;
+    }
+
+    p.subtitle {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .question-card {
+      padding: 1rem 0;
+    }
+
+    .question-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 1.25rem;
+      line-height: 1.4;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .option {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+
+    .option:hover {
+      background-color: #f1f5f9;
+    }
+
+    .option input {
+      margin-right: 0.75rem;
+      accent-color: var(--primary);
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn:disabled {
+      background-color: #cbd5e1;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background-color: #e2e8f0;
+      color: #334155;
+    }
+
+    .btn-secondary:hover {
+      background-color: #cbd5e1;
+    }
+
+    #result-box {
+      display: none;
+      text-align: center;
+      padding: 1.5rem 1rem;
+    }
+
+    #result-box h2 {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    .badge-pass {
+      background-color: var(--correct-bg);
+      color: var(--correct-border);
+    }
+
+    .badge-fail {
+      background-color: var(--incorrect-bg);
+      color: var(--incorrect-border);
+    }
+
+    .result-details {
+      font-size: 1.05rem;
+      color: #334155;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-restart {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-container">
+  <div class="top-bar">
+    <span class="progress-text" id="progress-indicator"></span>
+    <button class="lang-btn" id="lang-toggle" onclick="toggleLanguage()">Português 🇧🇷</button>
+  </div>
+
+  <div id="quiz-view">
+    <header>
+      <h1 id="ui-title">Spanish Exam - Level A1</h1>
+      <p class="subtitle" id="ui-subtitle">Select the correct option to complete each sentence.</p>
+    </header>
+
+    <div id="question-wrapper"></div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" id="btn-prev" onclick="prevQuestion()" disabled>Previous</button>
+      <button class="btn" id="btn-next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <div id="result-box">
+    <h2 id="result-title">Exam Results</h2>
+    <div id="result-badge" class="badge"></div>
+    <p class="result-details" id="result-text"></p>
+    <button class="btn btn-restart" id="btn-restart" onclick="initQuiz()">Try Again</button>
+  </div>
+</div>
+
+<script>
+  const fullPool = [
+    { question: "— Hola, ¿cómo ________ usted?\n— Muy bien, gracias.", options: ["estás", "está", "estoy", "están"], answer: 1 },
+    { question: "A mí me ________ la comida italiana.", options: ["gusta", "gustan", "gusto", "gustar"], answer: 0 },
+    { question: "Disculpe, ¿________ tarjeta de crédito aquí?", options: ["Paga", "Lleva", "Aceptan", "Cuesta"], answer: 2 },
+    { question: "Nosotros ________ español todos los días en la escuela.", options: ["estudio", "estudias", "estudia", "estudiamos"], answer: 3 },
+    { question: "Hoy Juan no vino a clase porque ________ enfermo.", options: ["es", "está", "son", "están"], answer: 1 },
+    { question: "María y Elena son profesoras; ________ trabajo es muy interesante.", options: ["mi", "tu", "su", "nuestro"], answer: 2 },
+    { question: "No me gusta ________ el pescado, prefiero comer pollo.", options: ["mucho", "nada", "bastante", "más"], answer: 1 },
+    { question: "________ casa de mis abuelos es grande y bonita.", options: ["El", "Un", "La", "Los"], answer: 2 },
+    { question: "Yo ________ a las 7:00 AM todas las mañanas.", options: [" levanto", "se levanta", "te levantas", "me levanto"], answer: 3 },
+    { question: "El próximo sábado nosotros ________ a visitar a nuestros tíos.", options: ["van", "vamos", "vas", "voy"], answer: 1 },
+    { question: "— ¿Qué hora es?\n— ________ las tres y media de la tarde.", options: ["Es", "Son", "Hay", "Está"], answer: 1 },
+    { question: "La farmacia está ________ del supermercado.", options: ["en", "a", "al lado", "por"], answer: 2 },
+    { question: "Mis tíos prefieren viajar ________ tren cuando van a la capital.", options: ["en", "a", "por", "con"], answer: 0 },
+    { question: "El clima en mi ciudad ________ generalmente.", options: ["a) es caluroso", "b) está caluroso", "c) es calor", "d) está calor"], answer: 0 },
+    { question: "En la cocina ________ una mesa grande y cuatro sillas.", options: ["es", "está", "hay", "tiene"], answer: 2 },
+    { question: "Mi departamento ________ tres dormitorios y dos baños.", options: ["hay", "tiene", "está", "es"], answer: 1 },
+    { question: "En este momento, Lucía está ________ una carta para su amiga.", options: ["escribe", "escribiendo", "escribir", "escrito"], answer: 1 },
+    { question: "Carlos siempre ________ ducha antes de salir a trabajar.", options: ["se", "me", "te", "nos"], answer: 0 },
+    { question: "¡Por favor, ________ la puerta al salir!", options: ["cierra", "cerras", "cerrando", "cerrar"], answer: 0 },
+    { question: "Mi amiga es ________ de estudio.", options: ["a) más alta yo", "b) más alta que yo", "c) más alta mi", "d) más alta me"], answer: 1 },
+    { question: "Mi hermano es más alto ________ yo.", options: ["como", "que", "tan", "más"], answer: 1 },
+    { question: "Marta es muy alegre, pero su hermano es bastante ________.", options: ["simpático", "tímido", "alto", "joven"], answer: 1 },
+    { question: "¿________ hablas inglés o español con tu familia?", options: ["Usted", "Tú", "Él", "Ellos"], answer: 1 },
+    { question: "Mis primos ________ de Argentina, pero ahora viven en Brasil.", options: ["están", "son", "hay", "tienen"], answer: 1 },
+    { question: "Mis amigos ________ al fútbol los fines de semana.", options: ["juegan", "jugamos", "juega", "juego"], answer: 0 }
+  ];
+
+  const translations = {
+    en: {
+      title: "Spanish Exam - Level A1",
+      subtitle: "Select the correct option to complete each sentence.",
+      langBtn: "Português 🇧🇷",
+      questionTag: "Question",
+      of: "of",
+      prevBtn: "Previous",
+      nextBtn: "Next",
+      submitBtn: "Finish Exam",
+      resultTitle: "A1 Level Exam Results",
+      passedBadge: "PASSED!",
+      failedBadge: "NOT PASSED",
+      scoreText: (score, total, pct) => `You scored <strong>${score}</strong> out of <strong>${total}</strong> (${pct}%).`,
+      passMessage: "You demonstrate the required mastery of Level A1 vocabulary and grammar.",
+      failMessage: "We recommend reviewing Level A1 content before moving forward.",
+      restartBtn: "Try Again"
+    },
+    pt: {
+      title: "Exame de Espanhol - Nível A1",
+      subtitle: "Selecione a opção correta para completar cada frase.",
+      langBtn: "English 🇬🇧",
+      questionTag: "Pergunta",
+      of: "de",
+      prevBtn: "Anterior",
+      nextBtn: "Próxima",
+      submitBtn: "Finalizar Exame",
+      resultTitle: "Resultado do Exame A1",
+      passedBadge: "APROVADO!",
+      failedBadge: "NÃO APROVADO",
+      scoreText: (score, total, pct) => `Você acertou <strong>${score}</strong> de <strong>${total}</strong> questões (${pct}%).`,
+      passMessage: "Você demonstra o domínio necessário do vocabulário e gramática do Nível A1.",
+      failMessage: "Recomendamos revisar os conteúdos do Nível A1 antes de avançar.",
+      restartBtn: "Tentar novamente"
+    }
+  };
+
+  let currentLang = 'en';
+  let activeQuestions = [];
+  let userAnswers = [];
+  let currentIndex = 0;
+
+  function initQuiz() {
+    activeQuestions = [...fullPool].sort(() => 0.5 - Math.random()).slice(0, 15);
+    userAnswers = new Array(15).fill(null);
+    currentIndex = 0;
+    
+    document.getElementById("quiz-view").style.display = "block";
+    document.getElementById("result-box").style.display = "none";
+    
+    updateUI();
+    renderQuestion();
+  }
+
+  function toggleLanguage() {
+    currentLang = currentLang === 'en' ? 'pt' : 'en';
+    updateUI();
+  }
+
+  function updateUI() {
+    const t = translations[currentLang];
+    document.getElementById("ui-title").textContent = t.title;
+    document.getElementById("ui-subtitle").textContent = t.subtitle;
+    document.getElementById("lang-toggle").textContent = t.langBtn;
+    document.getElementById("btn-prev").textContent = t.prevBtn;
+    document.getElementById("btn-restart").textContent = t.restartBtn;
+    document.getElementById("result-title").textContent = t.resultTitle;
+    
+    updateProgressAndNav();
+  }
+
+  function updateProgressAndNav() {
+    const t = translations[currentLang];
+    document.getElementById("progress-indicator").textContent = `${t.questionTag} ${currentIndex + 1} ${t.of} 15`;
+    
+    document.getElementById("btn-prev").disabled = currentIndex === 0;
+    
+    const nextBtn = document.getElementById("btn-next");
+    if (currentIndex === 14) {
+      nextBtn.textContent = t.submitBtn;
+    } else {
+      nextBtn.textContent = t.nextBtn;
+    }
+  }
+
+  function renderQuestion() {
+    const q = activeQuestions[currentIndex];
+    const wrapper = document.getElementById("question-wrapper");
+    
+    wrapper.innerHTML = `
+      <div class="question-card">
+        <p class="question-title">${q.question.replace('\n', '<br>')}</p>
+        <div class="options">
+          ${q.options.map((opt, optIdx) => `
+            <label class="option">
+              <input type="radio" name="currentQ" value="${optIdx}" 
+                ${userAnswers[currentIndex] === optIdx ? 'checked' : ''} 
+                onchange="selectOption(${optIdx})">
+              ${String.fromCharCode(97 + optIdx)}) ${opt}
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    
+    updateProgressAndNav();
+  }
+
+  function selectOption(optionIdx) {
+    userAnswers[currentIndex] = optionIdx;
+  }
+
+  function nextQuestion() {
+    if (currentIndex < 14) {
+      currentIndex++;
+      renderQuestion();
+    } else {
+      gradeQuiz();
+    }
+  }
+
+  function prevQuestion() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderQuestion();
+    }
+  }
+
+  function gradeQuiz() {
+    let score = 0;
+    activeQuestions.forEach((q, idx) => {
+      if (userAnswers[idx] === q.answer) {
+        score++;
+      }
+    });
+
+    const percentage = Math.round((score / 15) * 100);
+    const passed = percentage >= 70;
+    const t = translations[currentLang];
+
+    document.getElementById("quiz-view").style.display = "none";
+    document.getElementById("progress-indicator").textContent = "";
+    
+    const resultBox = document.getElementById("result-box");
+    const badge = document.getElementById("result-badge");
+    const resultText = document.getElementById("result-text");
+
+    badge.className = `badge ${passed ? 'badge-pass' : 'badge-fail'}`;
+    badge.textContent = passed ? t.passedBadge : t.failedBadge;
+
+    resultText.innerHTML = `
+      ${t.scoreText(score, 15, percentage)}<br><br>
+      ${passed ? t.passMessage : t.failMessage}
+    `;
+
+    resultBox.style.display = "block";
+  }
+
+  initQuiz();
+</script>
+
+</body>
+</html>
